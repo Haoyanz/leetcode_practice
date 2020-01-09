@@ -1,0 +1,109 @@
+/*
+We have a list of points on the plane.  Find the K closest points to the origin (0, 0).
+
+(Here, the distance between two points on a plane is the Euclidean distance.)
+
+You may return the answer in any order.  The answer is guaranteed to be unique (except for the order that it is in.)
+
+ 
+
+Example 1:
+
+Input: points = [[1,3],[-2,2]], K = 1
+Output: [[-2,2]]
+Explanation: 
+The distance between (1, 3) and the origin is sqrt(10).
+The distance between (-2, 2) and the origin is sqrt(8).
+Since sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.
+We only want the closest K = 1 points from the origin, so the answer is just [[-2,2]].
+*/
+
+//Solution 1 PriorityQueue with custom comparator
+class Solution {
+    public int[][] kClosest(int[][] points, int K) {
+        PriorityQueue<int[]> maxHeap = new PriorityQueue<>(new Comparator<int[]> () {
+            @Override
+            public int compare(int[] p1, int[] p2){
+                return Math.pow(p1[0], 2) + Math.pow(p1[1], 2) < Math.pow(p2[0], 2) + Math.pow(p2[1], 2) ? 1 : -1;
+            }
+        });
+        for(int[] point : points){
+            maxHeap.offer(point);
+            if(maxHeap.size() > K){
+                maxHeap.poll();
+            }
+        }
+        int[][] result = new int[K][2];
+        for(int i = 0; i < K; i++){
+            result[i] = maxHeap.poll();
+        }
+        return result;
+    }
+}
+
+
+//Solution 2 Sort by distance
+class Solution {
+    public int[][] kClosest(int[][] points, int K) {
+        int[] dist = new int[points.length];
+        for(int i = 0; i < points.length; i++){
+            dist[i] = points[i][0] * points[i][0] + points[i][1] * points[i][1];
+        }
+        Arrays.sort(dist);
+        int max = dist[K - 1];
+        int[][] result = new int[K][2];
+        for(int[] i : points){
+            if(i[0] * i[0] + i[1] * i[1] <= max){
+                result[--K] = i;
+            }
+        }
+        return result;
+    }
+}
+
+
+//Solution 3 QuickSelect
+class Solution {
+    public int[][] kClosest(int[][] points, int K) {
+        quickSort(points, K, 0, points.length - 1);
+        return Arrays.copyOfRange(points, 0, K);
+    }
+    public void quickSort(int[][] points, int K, int l, int r){
+        if(l >= r){
+            return;
+        }
+        int mid = partition(points, l, r);
+        if(mid == K){
+            return;
+        } else if(mid < K){
+            quickSort(points, K, mid + 1, r);
+        } else {
+            quickSort(points, K, l, mid - 1);
+        }
+    }
+    public int partition(int[][] points, int l, int r){
+        int pivotIndex = l + (int)Math.random() * (r - l + 1);
+        int[] pivot = points[pivotIndex];
+        swap(points, pivotIndex, r);
+        int right = r - 1;
+        int left = l;
+        while(left <= right){
+            if(getDist(points[left]) <= getDist(pivot)){
+                left++;
+            } else {
+                swap(points, left, right);
+                right--;
+            }
+        }
+        swap(points, left, r);
+        return left;
+    }
+    public void swap(int[][] points, int l, int r){
+        int[] temp = points[l];
+        points[l] = points[r];
+        points[r] = temp;
+    }
+    public int getDist(int[] p){
+        return p[0] * p[0] + p[1] * p[1];
+    }
+}
