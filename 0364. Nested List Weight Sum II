@@ -37,3 +37,25 @@ class Solution {
         return maxDepth;
     }
 }
+
+
+//better version
+class Solution {
+    public int depthSumInverse(List<NestedInteger> nestedList) {
+        int unweighted = 0;
+        int sum = 0;
+        while(!nestedList.isEmpty()){
+            List<NestedInteger> next = new ArrayList<>();
+            for(NestedInteger ni : nestedList){
+                if(ni.isInteger()){
+                    unweighted += ni.getInteger();
+                } else {
+                    next.addAll(ni.getList());
+                }
+            }
+            sum += unweighted;
+            nestedList = next;
+        }
+        return sum;
+    }
+}
