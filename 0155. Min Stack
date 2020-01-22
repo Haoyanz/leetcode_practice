@@ -1,0 +1,64 @@
+/*
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
+ 
+
+Example:
+
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin();   --> Returns -3.
+minStack.pop();
+minStack.top();      --> Returns 0.
+minStack.getMin();   --> Returns -2.
+*/
+
+class MinStack {
+    Deque<Integer> stack = null;
+    int minValue = Integer.MAX_VALUE;
+    /** initialize your data structure here. */
+    public MinStack() {
+        stack = new ArrayDeque<Integer>();
+    }
+    
+    public void push(int x) {
+        stack.addFirst(x);
+        if (x <= minValue){
+            minValue = x;
+        }
+        stack.addFirst(minValue);
+    }
+    
+    public void pop() {
+        //min Value row popped
+        stack.removeFirst();
+        
+        stack.removeFirst();
+        if (stack.size() == 0) {
+            minValue = Integer.MAX_VALUE;
+        } else {
+            minValue = stack.peekFirst();
+        }
+        
+    }
+    
+    public int top() {
+        int min = stack.removeFirst();
+        
+        int top = stack.peekFirst();
+        
+        stack.addFirst(min);
+        return top;
+        
+    }
+    
+    public int getMin() {
+        return stack.peekFirst();
+    }
+}
