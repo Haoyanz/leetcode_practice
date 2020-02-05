@@ -1,0 +1,58 @@
+/*
+You are given coins of different denominations and a total amount of money amount. Write a function to compute the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+
+Example 1:
+
+Input: coins = [1, 2, 5], amount = 11
+Output: 3 
+Explanation: 11 = 5 + 5 + 1
+Example 2:
+
+Input: coins = [2], amount = 3
+Output: -1
+*/
+
+//DP solution
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        int max = amount + 1;
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, max);
+        dp[0] = 0;
+        for(int i = 1; i <= amount; i++){
+            for(int j = 0; j < coins.length; j++){
+                if(coins[j] <= i){
+                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+}
+
+//DFS solution
+class Solution {
+    int result = Integer.MAX_VALUE;
+    public int coinChange(int[] coins, int amount) {
+        Arrays.sort(coins);
+        helper(coins, amount, coins.length - 1, 0);
+        return result == Integer.MAX_VALUE ? -1 : result;
+    }
+    public void helper(int[] coins, int amount, int index, int count){
+        if(amount < 0){
+            return;
+        }
+        int max = amount / coins[index];
+        for(int i = max; i >= 0; i--){
+            int newAmount = amount - coins[index] * i;
+            if(newAmount == 0){
+                result = Math.min(result, count + i);
+            }
+            if(index > 0 && count + i + 1 < result){
+                helper(coins, newAmount, index - 1, count + i);
+            } else {
+                return;
+            }
+        }
+    }
+}
