@@ -1,0 +1,62 @@
+/*
+
+*/
+
+//3 pass O(1) Space Solution
+class Solution {
+    public Node copyRandomList(Node head) {
+        if(head == null){
+            return head;
+        }
+        Node dummy = new Node(0);
+        dummy.next = head;
+        while(head != null){
+            Node temp = new Node(head.val);
+            temp.next = head.next;
+            head.next = temp;
+            head = head.next.next;
+        }
+        head = dummy.next;
+        while(head != null){
+            Node random = head.random;
+            if(random != null){
+                head.next.random = random.next;
+            }
+            head = head.next.next;
+        }
+        head = dummy.next;
+        Node cur = head.next;
+        dummy.next = cur;
+        while(head != null){
+            head.next = head.next.next;
+            cur.next = cur.next == null ? null : cur.next.next;
+            head = head.next;
+            cur = cur.next;
+        }
+        return dummy.next;
+    }
+}
+
+// Regular HashMap solution
+class Solution {
+    public Node copyRandomList(Node head) {
+        Map<Node, Node> map = new HashMap<>();
+        Node dummy = new Node(0);
+        Node cur = dummy;
+        while(head != null){
+            if(!map.containsKey(head)){
+                map.put(head, new Node(head.val));
+            }
+            cur.next = map.get(head);
+            if(head.random != null){
+                if(!map.containsKey(head.random)){
+                    map.put(head.random, new Node(head.random.val));
+                }
+                cur.next.random = map.get(head.random);
+            }
+            cur = cur.next;
+            head = head.next;
+        }
+        return dummy.next;
+    }
+}
